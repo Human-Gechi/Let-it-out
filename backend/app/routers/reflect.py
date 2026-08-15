@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 
 from backend.app.schemas import ReflectRequest, ReflectResponse
 from backend.app.services.ai_client import generate_reflection
-from backend.app.services.safety import CRISIS_NOTE, flag_risk
 from backend.app.services.ratelimit import rate_limit_dependency
+from backend.app.services.safety import CRISIS_NOTE, flag_risk
 
 router = APIRouter(tags=["REFLECT"])
 

@@ -3,12 +3,15 @@ import time
 from collections.abc import Callable
 
 from fastapi import HTTPException, Request, status
+
 from backend.app.config import get_settings
 
 _buckets: dict[str, dict] = {}
 _lock = asyncio.Lock()
 
 settings = get_settings()
+
+
 def rate_limit_dependency(
     times: int = 10,
     seconds: int = 60,
