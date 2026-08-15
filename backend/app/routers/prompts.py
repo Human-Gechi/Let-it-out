@@ -10,7 +10,7 @@ from backend.app.services.ratelimit import rate_limit_dependency
 
 router = APIRouter(tags=["PROMPTS"])
 
-_SEED_PATH = Path(__file__).parent.parent / "prompts" / "seed_prompts.json"
+_SEED_PATH = Path(__file__).parent.parent / "prompts" / "user_prompts.json"
 _SEED_PROMPTS: dict[str, list[str]] = json.loads(_SEED_PATH.read_text())
 DEFAULT_RECIPIENT = Query("other")
 

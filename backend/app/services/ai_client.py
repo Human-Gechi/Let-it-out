@@ -4,7 +4,7 @@ import requests
 from groq import Groq, GroqError
 
 from backend.app.config import get_settings
-from backend.app.prompts.ai_prompts import (
+from backend.app.prompts.system_prompts import (
     PROMPT_SYSTEM_PROMPT,
     REFLECTION_SYSTEM_PROMPT,
 )

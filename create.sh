@@ -28,13 +28,15 @@ touch backend/app/services/ai_client.py
 touch backend/app/services/ratelimit.py
 
 #seed dataa
-touch backend/app/prompts/seed_prompts.json
+touch backend/app/prompts/user_prompts.json
+touch backend/app/prompts/system_prompts.py
 
 #tests files
 touch backend/tests/test_health.py
 touch backend/tests/test_reflect.py
 
-touch backend/.env.example
-touch backend/requirements.txt
+touch .env.example
+touch requirements.txt
+touch .gitignore
 
 echo "Done"
