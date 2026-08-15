@@ -1,0 +1,24 @@
+{
+  "ex": [
+    "What did you never get the chance to say?",
+    "What do you wish they understood about why it ended?"
+  ],
+  "job": [
+    "What are you glad you learned there?",
+    "What would you tell yourself on your first day?",
+    "What they wis they knew before applying to the job"
+  ],
+  "past_self": [
+    "What would you want that version of you to know now?",
+    "What were you carrying back then that you've since put down?"
+  ],
+  "person_lost": [
+    "What's something you didn't get to say?",
+    "What do you want them to know about how you're doing now?"
+  ],
+  "other": [
+    "What do you need to say that you've been holding onto?",
+    "What would closure with this feel like?"
+  ]
+
+}
