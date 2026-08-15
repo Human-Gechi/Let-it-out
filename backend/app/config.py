@@ -12,7 +12,6 @@ class Settings(BaseSettings):
     AI_MODEL: str
     AI_API_KEY: str
 
-    RATE_LIMIT_PER_MINUTE: int = 10
     REQUEST_TIMEOUT_SECONDS: int = 15
     ENVIRONMENT: str = "Development"
 
