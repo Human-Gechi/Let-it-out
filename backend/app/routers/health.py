@@ -11,7 +11,7 @@ async def health():
     ai_status = check_ai_status()
 
     return HealthResponse(
-        status="ok",
+        status=ai_status.status
         ai_enabled=ai_status.ai_enabled,
         ai_reachable=ai_status.ai_reachable,
         ai_reason=ai_status.ai_reason,
