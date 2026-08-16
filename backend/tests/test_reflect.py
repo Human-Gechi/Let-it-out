@@ -1,48 +1,43 @@
-from fastapi.testclient import TestClient
-
-from backend.app.main import app
-
-client = TestClient(app)
+from backend.app.services import ai_client
 
 
-def test_root():
-    response = client.get("/")
+def test_prompt_response_matches_frontend_contract(api_request):
+    response = api_request("GET", "/prompt", params={"recipient_type": "other"})
 
     assert response.status_code == 200
-    body = response.json()
-    assert body["message"] == "Welcom to Let It Out API"
-    assert "docs" and "health" in body
+    assert response.json().keys() == {"prompt", "recipient_type"}
+    assert response.json()["recipient_type"] == "other"
 
 
-def test_reflect_for_normal_text_safe():
-
-    payload = {
-        "letter_text": "I wish my ex never left me. I really loved him so much",
-        "recipient_type": "ex",
-        "tone": "gentle",
-    }
-
-    response = client.post("/reflect", json=payload)
-
-    assert response.status_code == 200
-    body = response.json()
-    assert body["safe_to_release"] is True
-    assert "reflection" in body
-    assert body["resource_note"] is None
-
-
-def test_reflect_for_normal_text_unsafe():
-
-    payload = {
-        "letter_text": "I hate myself and want to kill myself",
-        "recipient_type": "ex",
-        "tone": "gentle",
-    }
-
-    response = client.post("/reflect", json=payload)
+def test_reflection_falls_back_when_ai_is_disabled(api_request, monkeypatch):
+    monkeypatch.setattr(ai_client.settings, "AI_ENABLED", False)
+    response = api_request(
+        "POST",
+        "/reflect",
+        json={
+            "letter_text": "I needed to say this somewhere.",
+            "recipient_type": "other",
+            "tone": "gentle",
+        },
+    )
 
     assert response.status_code == 200
-    body = response.json()
-    assert body["safe_to_release"] is True
-    assert "reflection" in body
-    assert body["resource_note"] is None
+    assert response.json()["safe_to_release"] is True
+    assert response.json()["resource_note"] is None
+    assert response.json()["reflection"]
+
+
+def test_flagged_reflection_returns_crisis_resource(api_request):
+    response = api_request(
+        "POST",
+        "/reflect",
+        json={
+            "letter_text": "I want to die.",
+            "recipient_type": "other",
+            "tone": "gentle",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["safe_to_release"] is False
+    assert response.json()["resource_note"]
