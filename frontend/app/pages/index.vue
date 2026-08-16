@@ -120,11 +120,6 @@ onBeforeUnmount(() => {
           <span>Unsent letter</span>
           <span>No. 01</span>
         </div>
-        <div class="entry-sheet__stamp" aria-hidden="true">
-          <span>Private</span>
-          <strong>Keep</strong>
-          <span>or release</span>
-        </div>
 
         <div class="entry-sheet__recipient">
           <label for="home-recipient">Address this to</label>
@@ -185,7 +180,7 @@ onBeforeUnmount(() => {
             <div class="process-card__mark" aria-hidden="true">03</div>
             <p class="process-card__label">Release</p>
             <h3>Let the browser draft leave with you.</h3>
-            <p>Press and hold to clear the saved letter from this device.</p>
+            <p>Tear the letter up and it is gone from this device.</p>
             <span class="process-card__note">On your timing</span>
           </article>
         </div>

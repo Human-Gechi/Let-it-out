@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { HeartHandshake, Phone } from 'lucide-vue-next'
 
-defineProps<{
+withDefaults(defineProps<{
   note: string
-}>()
+  embedded?: boolean
+}>(), {
+  embedded: false,
+})
 
 interface CrisisLine {
   region: string
@@ -21,9 +24,12 @@ const LINES: CrisisLine[] = [
 
 <template>
   <section
-    role="note"
+    role="alert"
     aria-label="Support lines you can call"
-    class="animate-fade-rise rounded-lg border border-care bg-care-soft p-6 sm:p-7"
+    class="animate-fade-rise"
+    :class="embedded
+      ? 'border-t border-care pt-6'
+      : 'rounded-lg border border-care bg-care-soft p-6 sm:p-7'"
   >
     <div class="flex items-start gap-3">
       <HeartHandshake class="mt-0.5 h-5 w-5 shrink-0 text-care" aria-hidden="true" />

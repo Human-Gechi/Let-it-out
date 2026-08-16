@@ -26,8 +26,8 @@ The frontend calls `http://127.0.0.1:8000` by default. Override it with
 
 ## Environment
 
-AI is disabled by default and the API returns a local fallback reflection. To use Groq, set
-`AI_ENABLED=True`, `AI_API_KEY`, and `AI_MODEL` in the root `.env` file.
+Groq reflection is enabled by default. Set `AI_API_KEY` in the root `.env` file to use it. If the
+key is missing or the provider cannot be reached, the API returns a local fallback reflection.
 
 `ALLOWED_ORIGINS` accepts a comma-separated list. Local development uses:
 

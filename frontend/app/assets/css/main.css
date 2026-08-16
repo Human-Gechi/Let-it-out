@@ -301,6 +301,12 @@
   }
 
   .letter-paper {
+    /* Rules repeat every --rule-height; --rule-origin shifts the first one so
+       that it lands just under the baseline of the first written line. Any
+       surface that puts text on the paper sets its own origin from its padding. */
+    --rule-height: 2.15rem;
+    --rule-origin: 0.7rem;
+
     position: relative;
     overflow: hidden;
     border: 1px solid var(--border);
@@ -311,12 +317,20 @@
       repeating-linear-gradient(
         to bottom,
         transparent 0,
-        transparent 2.15rem,
-        color-mix(in srgb, var(--border) 58%, transparent) 2.15rem,
-        color-mix(in srgb, var(--border) 58%, transparent) calc(2.15rem + 1px)
+        transparent var(--rule-height),
+        color-mix(in srgb, var(--border) 58%, transparent) var(--rule-height),
+        color-mix(in srgb, var(--border) 58%, transparent) calc(var(--rule-height) + 1px)
       );
-    background-position: 0 0, 0 0.7rem;
+    background-position: 0 0, 0 var(--rule-origin);
     box-shadow: var(--shadow-resting);
+  }
+
+  /* Letter text metrics. Line height must equal --rule-height or the writing
+     drifts off the rules a little further with every line. */
+  .letter-hand {
+    font-family: 'Fraunces Variable', Fraunces, ui-serif, Georgia, serif;
+    font-size: 1.0625rem;
+    line-height: 2.15rem;
   }
 
   .letter-field {
@@ -693,58 +707,6 @@
   box-shadow: 0 22px 60px rgba(45, 32, 38, 0.1);
 }
 
-.entry-sheet__stamp {
-  position: absolute;
-  z-index: 3;
-  top: 4.6rem;
-  right: 2.5rem;
-  display: grid;
-  width: 5.5rem;
-  height: 5.5rem;
-  transform: rotate(6deg);
-  place-content: center;
-  border: 1px solid color-mix(in srgb, var(--primary) 66%, transparent);
-  border-radius: 50%;
-  color: var(--primary);
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.entry-sheet__stamp::before,
-.entry-sheet__stamp::after {
-  position: absolute;
-  inset: 0.3rem;
-  border: 1px dashed color-mix(in srgb, var(--primary) 50%, transparent);
-  border-radius: 50%;
-  content: '';
-}
-
-.entry-sheet__stamp::after {
-  inset: 0.65rem -1.6rem auto;
-  height: 2.4rem;
-  border-right: 0;
-  border-bottom: 0;
-  border-left: 0;
-  border-radius: 0;
-}
-
-.entry-sheet__stamp span,
-.entry-sheet__stamp strong {
-  display: block;
-  line-height: 1.15;
-}
-
-.entry-sheet__stamp span {
-  font-size: 0.48rem;
-  font-weight: 800;
-}
-
-.entry-sheet__stamp strong {
-  margin: 0.1rem 0;
-  font-family: 'Fraunces Variable', Fraunces, ui-serif, Georgia, serif;
-  font-size: 1rem;
-}
-
 .entry-sheet__meta,
 .entry-sheet__footer {
   display: flex;
@@ -787,6 +749,14 @@
   color: var(--foreground);
   font-size: 0.9rem;
   font-weight: 650;
+}
+
+/* The dropdown list is painted by the browser, not by the page: without an
+   explicit pair it inherits a light panel and loses the light text on it. */
+.entry-sheet__recipient select option,
+.recipient-select option {
+  background-color: var(--popover);
+  color: var(--popover-foreground);
 }
 
 .entry-sheet__body {
@@ -1119,6 +1089,10 @@
 }
 
 .writer-sheet {
+  /* padding-top less the drop from a line box's bottom to just under its
+     baseline (~0.57rem at these metrics), so line one sits on rule one. */
+  --rule-origin: 1.23rem;
+
   padding: 1.8rem 2.25rem 2.5rem;
 }
 
@@ -1155,12 +1129,6 @@
   color: var(--muted-foreground);
   font-size: 0.72rem;
   line-height: 1.55;
-}
-
-.reflection-panel {
-  margin-top: 2rem;
-  border-top: 2px solid var(--foreground);
-  padding-top: 1.5rem;
 }
 
 .site-footer {
@@ -1328,6 +1296,89 @@
   animation: ink-release 1400ms ease forwards;
 }
 
+/* The letter is drawn twice, each copy clipped to one side of a ragged seam,
+   so the two halves can be pulled apart like torn paper. */
+.letter-tear {
+  position: relative;
+  isolation: isolate;
+}
+
+.letter-tear__half {
+  --rule-origin: 1.43rem;
+
+  padding: 2rem 1.75rem;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.letter-excerpt {
+  --rule-origin: 0.83rem;
+
+  padding: 1.4rem 1.5rem;
+}
+
+.letter-tear__half--left {
+  position: relative;
+  clip-path: polygon(
+    0 0, 52% 0, 48% 12%, 53% 26%, 47% 38%, 52% 52%,
+    46% 64%, 51% 78%, 47% 90%, 50% 100%, 0 100%
+  );
+  animation: tear-left 1400ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.letter-tear__half--right {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    52% 0, 100% 0, 100% 100%, 50% 100%, 47% 90%, 51% 78%,
+    46% 64%, 52% 52%, 47% 38%, 53% 26%, 48% 12%
+  );
+  animation: tear-right 1400ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+/* A light seam that races down the page as the rip opens. */
+.letter-tear__seam {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform-origin: top center;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--foreground) 22%, transparent),
+    transparent
+  );
+  filter: blur(1px);
+  animation: tear-seam 620ms ease-out forwards;
+}
+
+@keyframes tear-left {
+  0% { opacity: 1; transform: none; }
+  14% { transform: translate(-0.3rem, -0.1rem) rotate(-1.1deg); }
+  100% { opacity: 0; transform: translate(-3.75rem, 2.75rem) rotate(-9deg); filter: blur(3px); }
+}
+
+@keyframes tear-right {
+  0% { opacity: 1; transform: none; }
+  14% { transform: translate(0.3rem, 0.1rem) rotate(1.1deg); }
+  100% { opacity: 0; transform: translate(3.75rem, 3.4rem) rotate(8deg); filter: blur(3px); }
+}
+
+@keyframes tear-seam {
+  0% { opacity: 0; transform: scaleY(0); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: scaleY(1); }
+}
+
+.letter-tear--reduced .letter-tear__half,
+.letter-tear--reduced .letter-tear__seam {
+  animation: none;
+  opacity: 0;
+}
+
 .release-hold {
   position: relative;
   isolation: isolate;
@@ -1361,7 +1412,6 @@
   .writing-intro h2, .ritual-section__heading h2 { font-size: 2rem; }
   .entry-sheet__body { padding: 2rem 1.35rem 1rem; }
   .entry-sheet__recipient { grid-template-columns: 1fr; gap: 0.4rem; }
-  .entry-sheet__stamp { display: none; }
   .entry-sheet__footer { align-items: stretch; flex-direction: column; }
   .entry-sheet__footer .action-button { width: 100%; }
   .ritual-section { margin-top: 5rem; }
@@ -1376,7 +1426,7 @@
   .writer-heading__status { margin-top: 1rem; }
   .writer-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .writer-tools { position: static; grid-template-columns: 1fr; gap: 1.25rem; }
-  .writer-sheet { padding: 1.35rem 1.15rem 2rem; }
+  .writer-sheet { --rule-origin: 0.78rem; padding: 1.35rem 1.15rem 2rem; }
   .letter-field { min-height: 19rem; }
   .site-footer__flourish { right: -70%; width: 180%; }
   .site-footer__inner { width: min(100% - 1.25rem, 1120px); grid-template-columns: 1fr; gap: 2.5rem; padding: 5rem 0 3rem; }
