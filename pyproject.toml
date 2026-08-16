@@ -1,0 +1,53 @@
+[project]
+name = "let-it-out"
+version = "0.1.0"
+description = "A quiet app for writing letters you'll never send, then releasing them through a small ritual - signifying letting it go."
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "pydantic-settings",
+  "groq",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ruff",
+  "pytest",
+  "httpx",
+]
+
+[project.urls]
+Homepage = "https://let-it-out.vercel.app"
+Repository = "https://github.com/Human-Gechi/let-it-out"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+  "E",    
+  "F",  
+  "I",    
+  "UP",   
+  "B",   
+  "SIM",  
+  "C4",   
+]
+ignore = [
+  "E501",  
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"] 
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

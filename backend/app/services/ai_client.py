@@ -1,7 +1,7 @@
 import time
+from typing import Optional
 
-import requests
-from groq import Groq, GroqError
+from groq import Groq
 
 from backend.app.config import get_settings
 from backend.app.prompts.system_prompts import (
@@ -13,16 +13,16 @@ from backend.app.schemas import HealthResponse
 settings = get_settings()
 
 
-_client: Groq | None = None
+_client: Optional[Groq] = None
 if settings.AI_API_KEY:
     _client = Groq(api_key=settings.AI_API_KEY)
 
 _CACHE_TTL_SECONDS: float = 60.0
 _last_check_timestamp: float = 0.0
-_cached_status: HealthResponse | None = None
+_cached_status: Optional[HealthResponse] = None
 
 
-def _ai_available() -> bool:
+def ai_available() -> bool:
     return settings.AI_ENABLED and _client is not None
 
 
@@ -38,7 +38,7 @@ def _fallback_prompt() -> str:
 
 
 async def generate_reflection(text: str, recipient_type: str, tone: str) -> str:
-    if not _ai_available():
+    if not ai_available():
         return _fallback_reflection()
 
     try:
@@ -57,12 +57,12 @@ async def generate_reflection(text: str, recipient_type: str, tone: str) -> str:
             ],
         )
         return response.choices[0].message.content
-    except GroqError:
+    except Exception:
         return _fallback_reflection()
 
 
 async def generate_prompt(recipient_type: str) -> str:
-    if not _ai_available():
+    if not ai_available():
         return _fallback_prompt()
 
     try:
@@ -75,7 +75,7 @@ async def generate_prompt(recipient_type: str) -> str:
             ],
         )
         return response.choices[0].message.content
-    except GroqError:
+    except Exception:
         return _fallback_prompt()
 
 
@@ -99,51 +99,29 @@ def check_ai_status() -> HealthResponse:
         )
 
     now = time.monotonic()
-    if (
-        _cached_status is not None
-        and (now - _last_check_timestamp) < _CACHE_TTL_SECONDS
-    ):
+    if _cached_status is not None and (now - _last_check_timestamp) < _CACHE_TTL_SECONDS:
         return _cached_status
 
     try:
-        client = Groq(api_key=settings.AI_API_KEY)
-
-        client.chat.completions.create(
+        _client.chat.completions.create(
             model=settings.AI_MODEL,
             messages=[{"role": "user", "content": "ping"}],
             max_tokens=1,
         )
-
         status = HealthResponse(
             status="ok",
             ai_enabled=True,
             ai_reachable=True,
             ai_reason=None,
         )
+    except Exception:
+        status = HealthResponse(
+            status="degraded",
+            ai_enabled=True,
+            ai_reachable=False,
+            ai_reason="Unexpected error communicating with Groq",
+        )
 
-    except requests.RequestException:
-        status = HealthResponse(
-            status="degraded",
-            ai_enabled=True,
-            ai_reachable=False,
-            ai_reason="Network error communicating with provider",
-        )
-    except TimeoutError:
-        status = HealthResponse(
-            status="degraded",
-            ai_enabled=True,
-            ai_reachable=False,
-            ai_reason="Request to provider timed out",
-        )
-    except Exception as exc:
-        if isinstance(exc, (KeyboardInterrupt, SystemExit)):
-            raise
-        status = HealthResponse(
-            status="degraded",
-            ai_enabled=True,
-            ai_reachable=False,
-            ai_reason=f"Unexpected error communicating with provider: {exc}",
-        )
     _last_check_timestamp = now
     _cached_status = status
     return status

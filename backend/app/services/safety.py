@@ -17,7 +17,7 @@ CRISIS_NOTE = (
     "If you're in crisis or thinking about harming yourself, please reach out "
     "to a real person: in the US, call or text 988 (Suicide & Crisis Lifeline); "
     "in the UK, call Samaritans at 116 123; in Nigeria, call Nigeria Mentally Aware Nigeria Initiative (MANI) at 08091116264  "
-    "You don't have to go through this alone much 💝"
+    "You don't have to go through this alone. Much 💝"
 )
 
 
