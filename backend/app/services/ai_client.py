@@ -1,7 +1,7 @@
 import time
 from typing import Optional
 
-from groq import Groq
+from groq import Groq, GroqError
 
 from backend.app.config import get_settings
 from backend.app.prompts.system_prompts import (
@@ -57,7 +57,7 @@ async def generate_reflection(text: str, recipient_type: str, tone: str) -> str:
             ],
         )
         return response.choices[0].message.content
-    except Exception:
+    except GroqError:
         return _fallback_reflection()
 
 
@@ -75,7 +75,7 @@ async def generate_prompt(recipient_type: str) -> str:
             ],
         )
         return response.choices[0].message.content
-    except Exception:
+    except GroqError:
         return _fallback_prompt()
 
 
@@ -114,6 +114,20 @@ def check_ai_status() -> HealthResponse:
             ai_reachable=True,
             ai_reason=None,
         )
+    except TimeoutError:
+        status = HealthResponse(
+            status="degraded",
+            ai_enabled=True,
+            ai_reachable=False,
+            ai_reason="Request to provider timed out",
+        )
+    except GroqError:
+        status = HealthResponse(
+            status="degraded",
+            ai_enabled=True,
+            ai_reachable=False,
+            ai_reason="AI provider request failed",
+        )
     except Exception:
         status = HealthResponse(
             status="degraded",
@@ -121,7 +135,6 @@ def check_ai_status() -> HealthResponse:
             ai_reachable=False,
             ai_reason="Unexpected error communicating with Groq",
         )
-
     _last_check_timestamp = now
     _cached_status = status
     return status
