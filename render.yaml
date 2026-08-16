@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: let-it-out-api
+    runtime: python
+    plan: free
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: AI_ENABLED
+        value: "True"
+      - key: AI_PROVIDER
+        value: Groq
+      - key: AI_MODEL
+        value: llama-3.3-70b-versatile
+      - key: ENVIRONMENT
+        value: Production
+      - key: REQUEST_TIMEOUT_SECONDS
+        value: "15"
+
+      # sync: false keeps the value out of this file — Render prompts for it on
+      # first deploy and stores it encrypted. Never commit either of these.
+      - key: AI_API_KEY
+        sync: false
+      # Comma-separated origins, e.g. https://let-it-out.vercel.app
+      - key: ALLOWED_ORIGINS
+        sync: false
