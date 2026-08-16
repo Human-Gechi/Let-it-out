@@ -2,6 +2,8 @@
 const props = defineProps<{
   open: boolean
   letter: string
+  /** Skip the press-and-hold step: the decision was already made elsewhere. */
+  immediate?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -148,6 +150,12 @@ function handleOpen() {
   holdProgress.value = 0
   restoreTo = document.activeElement as HTMLElement | null
   lockScroll()
+
+  if (props.immediate) {
+    completeRelease()
+    return
+  }
+
   nextTick(() => holdButton.value?.focus())
 }
 
@@ -207,7 +215,7 @@ onBeforeUnmount(() => {
             that has already been processed.
           </p>
 
-          <blockquote class="letter-paper mt-6 max-h-44 overflow-hidden px-5 py-4 font-serif text-sm leading-7 text-secondary-foreground">
+          <blockquote class="letter-paper letter-excerpt letter-hand mt-6 max-h-44 overflow-hidden text-secondary-foreground">
             {{ excerpt }}
           </blockquote>
 
@@ -236,11 +244,17 @@ onBeforeUnmount(() => {
       <div v-else ref="stage" tabindex="-1" class="relative w-full max-w-lg focus:outline-none">
         <h2 id="release-stage-heading" class="sr-only">Releasing your browser draft</h2>
         <InkFlourish class="pointer-events-none absolute -left-40 top-1/2 h-40 w-[50rem] -translate-y-1/2 opacity-45" />
-        <div class="letter-paper relative px-7 py-8" :class="reduced ? 'opacity-0' : 'animate-ink-release'">
-          <p class="font-serif text-base leading-8 text-foreground">{{ excerpt }}</p>
+        <div class="letter-tear" :class="reduced ? 'letter-tear--reduced' : ''" aria-hidden="true">
+          <div class="letter-paper letter-tear__half letter-tear__half--left">
+            <p class="letter-hand text-foreground">{{ excerpt }}</p>
+          </div>
+          <div class="letter-paper letter-tear__half letter-tear__half--right">
+            <p class="letter-hand text-foreground">{{ excerpt }}</p>
+          </div>
+          <span class="letter-tear__seam" />
         </div>
         <p class="relative mt-7 text-center text-sm text-muted-foreground" role="status" aria-live="polite">
-          Clearing the saved draft from this browser.
+          Tearing up the draft saved in this browser.
         </p>
       </div>
     </div>

@@ -9,7 +9,8 @@
       <nav class="header-nav" aria-label="Main navigation">
         <NuxtLink to="/about" class="header-link">How your words move</NuxtLink>
         <NuxtLink to="/write" class="action-button">Write</NuxtLink>
-        <ThemeMenu />
+        <!-- Hidden while light mode is commented out: Dark is the only choice. -->
+        <!-- <ThemeMenu /> -->
       </nav>
     </div>
   </header>

@@ -52,7 +52,7 @@ export interface ToneOption {
 export const TONES: ToneOption[] = [
   { value: 'gentle', label: 'Gentle', description: 'Soft, unhurried, no advice.' },
   { value: 'encouraging', label: 'Encouraging', description: 'Warm and a little braver.' },
-  { value: 'neutral', label: 'Plain', description: 'Steady and matter of fact.' },
+  { value: 'neutral', label: 'Neutral', description: 'Steady and matter of fact.' },
 ]
 
 export function recipientFor(value: RecipientType): RecipientOption {

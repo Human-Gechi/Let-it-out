@@ -8,9 +8,9 @@ DEFAULT_ALLOWED_ORIGINS = "http://127.0.0.1:3000,http://localhost:3000"
 
 class Settings(BaseSettings):
     APP_NAME: str = ""
-    AI_ENABLED: bool = False
+    AI_ENABLED: bool = True
 
-    AI_PROVIDER: str = "groq"
+    AI_PROVIDER: str = "Groq"
     AI_MODEL: str = "llama-3.3-70b-versatile"
     AI_API_KEY: str = ""
     ALLOWED_ORIGINS: str = DEFAULT_ALLOWED_ORIGINS

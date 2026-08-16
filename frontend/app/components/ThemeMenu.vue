@@ -4,9 +4,11 @@ import type { Theme } from '~/composables/useTheme'
 
 const { theme, setTheme } = useTheme()
 
+// Light mode is commented out for now, which leaves Dark as the only choice.
+// Restore the two entries below together with the block in useTheme.
 const OPTIONS: { value: Theme; label: string; icon: typeof Sun }[] = [
-  { value: 'system', label: 'System', icon: Monitor },
-  { value: 'light', label: 'Light', icon: Sun },
+  // { value: 'system', label: 'System', icon: Monitor },
+  // { value: 'light', label: 'Light', icon: Sun },
   { value: 'dark', label: 'Dark', icon: Moon },
 ]
 

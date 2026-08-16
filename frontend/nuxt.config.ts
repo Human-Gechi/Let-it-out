@@ -33,13 +33,16 @@ export default defineNuxtConfig({
           content:
             'Write the letter you never sent. Keep the draft in this browser, ask for one reflection if you want it, then clear it when you are ready.',
         },
-        { name: 'theme-color', content: '#f1ecef' },
+        { name: 'theme-color', content: '#171416' },
       ],
       link: [{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
       script: [
         {
-          // Applies the stored theme before first paint so the page never flashes.
-          innerHTML: `(function(){try{var t=localStorage.getItem('lio-theme')||'light';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.dataset.theme=t}catch(e){}})()`,
+          // Light mode is off for now: the app is dark only, so mark the document
+          // dark before first paint and ignore any stored preference.
+          innerHTML: `(function(){try{document.documentElement.classList.add('dark');document.documentElement.dataset.theme='dark'}catch(e){}})()`,
+          // Restore with light mode:
+          // innerHTML: `(function(){try{var t=localStorage.getItem('lio-theme')||'light';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.dataset.theme=t}catch(e){}})()`,
           tagPosition: 'head',
         },
       ],
