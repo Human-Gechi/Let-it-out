@@ -31,9 +31,7 @@ def rate_limit_dependency(
                 return
 
             elapsed = now - bucket["last"]
-            bucket["tokens"] = min(
-                capacity, bucket["tokens"] + elapsed * refill_per_sec
-            )
+            bucket["tokens"] = min(capacity, bucket["tokens"] + elapsed * refill_per_sec)
             bucket["last"] = now
 
             if bucket["tokens"] >= 1.0:

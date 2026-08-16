@@ -5,4 +5,4 @@ pydantic-settings
 groq
 ruff
 pytest
-httpx
+httpx2

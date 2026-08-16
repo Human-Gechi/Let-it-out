@@ -2,11 +2,10 @@ import json
 import random
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Query
 
 from backend.app.schemas import PromptResponse, RecipientType
-from backend.app.services.ai_client import generate_prompt
-from backend.app.services.ratelimit import rate_limit_dependency
+from backend.app.services.ai_client import ai_available, generate_prompt
 
 router = APIRouter(tags=["PROMPTS"])
 
@@ -15,22 +14,24 @@ _SEED_PROMPTS: dict[str, list[str]] = json.loads(_SEED_PATH.read_text())
 DEFAULT_RECIPIENT = Query("other")
 
 
-@router.get(
-    "/prompt",
-    response_model=PromptResponse,
-    dependencies=[Depends(rate_limit_dependency(10, 60))],
-)
-async def get_prompt(recipient_type: RecipientType = DEFAULT_RECIPIENT):
+def _seed_prompt(recipient_type: str) -> str | None:
     candidates = _SEED_PROMPTS.get(recipient_type, [])
-
     if not candidates:
         candidates = _SEED_PROMPTS.get("other", [])
-
     if not candidates:
-        prompt_text = await generate_prompt(recipient_type)
-        return PromptResponse(prompt=prompt_text, recipient_type=recipient_type)
+        return None
+    return random.choice(candidates)
 
-    return PromptResponse(
-        prompt=random.choice(candidates),
-        recipient_type=recipient_type,
-    )
+
+@router.get("/prompt", response_model=PromptResponse)
+async def get_prompt(recipient_type: RecipientType = DEFAULT_RECIPIENT):
+    if ai_available():
+        ai_prompt = await generate_prompt(recipient_type)
+        return PromptResponse(prompt=ai_prompt, recipient_type=recipient_type)
+
+    seed_prompt = _seed_prompt(recipient_type)
+    if seed_prompt:
+        return PromptResponse(prompt=seed_prompt, recipient_type=recipient_type)
+
+    fallback = await generate_prompt(recipient_type)
+    return PromptResponse(prompt=fallback, recipient_type=recipient_type)
