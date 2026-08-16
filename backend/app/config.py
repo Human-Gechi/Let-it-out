@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     APP_NAME: str = ""
-    AI_ENABLED: bool = True
+    AI_ENABLED: bool = False
 
     AI_PROVIDER: str
     AI_MODEL: str
